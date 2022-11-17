@@ -30,7 +30,6 @@ func dataSourceDeals() *schema.Resource {
 func dataSourceDealsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := &http.Client{Timeout: 10 * time.Second}
 	id := d.Get("id").(string)
-	//apikey := d.Get("apikey").(string)
 	apikey := m.(*Client).apitoken
 	apiurl := fmt.Sprintf("https://api.pipedrive.com/v1/deals/%s?api_token=%s", id, apikey)
 
