@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -58,7 +57,7 @@ func dataSourceDealsRead(ctx context.Context, d *schema.ResourceData, m interfac
 	d.Set("title", title)
 
 	// always run
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
+	d.SetId(id)
 
 	return diags
 }
