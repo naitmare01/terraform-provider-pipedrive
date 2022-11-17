@@ -1,6 +1,6 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
-HOSTNAME=davidberndtsson
-NAMESPACE=local
+HOSTNAME=hashicorp.com
+NAMESPACE=edu
 NAME=pipedrive
 BINARY=terraform-provider-${NAME}
 VERSION=0.1
