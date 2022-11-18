@@ -17,7 +17,8 @@ func Provider() *schema.Provider {
 		},
 		ResourcesMap: map[string]*schema.Resource{},
 		DataSourcesMap: map[string]*schema.Resource{
-			"pipedrive_deals": dataSourceDeals(),
+			"pipedrive_deals":         dataSourceDeals(),
+			"pipedrive_organizations": dataSourceOrganizations(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
