@@ -31,7 +31,8 @@ func dataSourceDealsRead(ctx context.Context, d *schema.ResourceData, m interfac
 	client := &http.Client{Timeout: 10 * time.Second}
 	id := d.Get("id").(string)
 	apikey := m.(*Client).apitoken
-	apiurl := fmt.Sprintf("https://api.pipedrive.com/v1/deals/%s?api_token=%s", id, apikey)
+	baseurl := m.(*Client).baseurl
+	apiurl := fmt.Sprintf("%s/deals/%s%s", baseurl, id, apikey)
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
