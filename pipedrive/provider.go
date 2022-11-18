@@ -15,7 +15,9 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("PIPEDRIVE_PASSWORD", nil),
 			},
 		},
-		ResourcesMap: map[string]*schema.Resource{},
+		ResourcesMap: map[string]*schema.Resource{
+			"pipedrive_deals": resourceDeals(),
+		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"pipedrive_deals":         dataSourceDeals(),
 			"pipedrive_organizations": dataSourceOrganizations(),
