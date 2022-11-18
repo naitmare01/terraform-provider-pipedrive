@@ -30,11 +30,13 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 type Client struct {
 	apitoken string
+	baseurl  string
 }
 
 // NewClient creates common settings
 func NewClient(apitoken string) *Client {
 	return &Client{
-		apitoken: apitoken,
+		apitoken: "?api_token=" + apitoken,
+		baseurl:  "https://api.pipedrive.com/v1",
 	}
 }
