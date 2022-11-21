@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -27,6 +26,24 @@ func resourceDeals() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"status": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "open",
+				ValidateFunc: func(val any, key string) (warns []string, errs []error) {
+					value := val.(string)
+					expected := map[string]bool{
+						"open":    true,
+						"won":     true,
+						"lost":    true,
+						"deleted": true,
+					}
+					if !expected[value] {
+						errs = append(errs, fmt.Errorf("%q is not a valid value. Please use open, won, lost, deleted", value))
+					}
+					return
+				},
+			},
 		},
 		CreateContext: resourceDealsCreate,
 		ReadContext:   resourceDealsRead,
@@ -40,14 +57,10 @@ func resourceDeals() *schema.Resource {
 
 func resourceDealsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := &http.Client{Timeout: 10 * time.Second}
-	title := d.Get("title").(string)
-	org_id := d.Get("org_id").(string)
 	apikey := m.(*Client).apitoken
 	baseurl := m.(*Client).baseurl
 	apiurl := fmt.Sprintf("%s/deals%s", baseurl, apikey)
-	payload := strings.NewReader(`{
-		"title": "` + title + `",` +
-		`"org_id": "` + org_id + `"}`)
+	payload := DealsBody(d)
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -113,9 +126,11 @@ func resourceDealsRead(ctx context.Context, d *schema.ResourceData, m interface{
 
 	org_name := result["data"].(map[string]interface{})["org_name"]
 	title := result["data"].(map[string]interface{})["title"]
+	status := result["data"].(map[string]interface{})["status"]
 
 	d.Set("org_name", org_name)
 	d.Set("title", title)
+	d.Set("status", status)
 
 	return diags
 }

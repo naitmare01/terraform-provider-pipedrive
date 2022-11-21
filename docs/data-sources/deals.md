@@ -33,3 +33,4 @@ In addition to all argument, the following attributes are exported:
 * **id** The ID of this resource
 * **title** The title of this resource
 * **org_name** The organization name
+* **status** Status of the deal open = Open, won = Won, lost = Lost, deleted = Deleted.

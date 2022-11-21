@@ -28,6 +28,7 @@ The following arguments are supported:
 
 * `title` - (Required) The title of the deals that will be created in pipedrive.
 * `org_id` - (Required) The organization ID of the organization where the deal will be created.
+* `status` - (Optional) `open`, `won`, `lost`, `deleted`. If omitted, status will be set to open.
 
 ## Attributes Reference
 

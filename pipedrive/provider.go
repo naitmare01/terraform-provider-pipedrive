@@ -52,9 +52,19 @@ func DealsBody(d *schema.ResourceData) *strings.Reader {
 	resultend := `}`
 
 	title := d.Get("title").(string)
+	status := d.Get("status").(string)
+	org_id := d.Get("org_id").(string)
+
 	if title != "" {
 		result += `"title": "` + title + `",`
 	}
+	if status != "" {
+		result += `"status": "` + status + `",`
+	}
+	if org_id != "" {
+		result += `"org_id": "` + org_id + `",`
+	}
+
 	result = strings.TrimSuffix(result, ",")
 	result = resultstart + result + resultend
 	returnresult := strings.NewReader(result)
