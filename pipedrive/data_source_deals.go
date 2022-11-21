@@ -23,6 +23,10 @@ func dataSourceDeals() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"org_name": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -54,7 +58,10 @@ func dataSourceDealsRead(ctx context.Context, d *schema.ResourceData, m interfac
 		return diag.FromErr(err)
 	}
 	title := result["data"].(map[string]interface{})["title"]
+	org_name := result["data"].(map[string]interface{})["org_name"]
+
 	d.Set("title", title)
+	d.Set("org_name", org_name)
 
 	// always run
 	d.SetId(id)

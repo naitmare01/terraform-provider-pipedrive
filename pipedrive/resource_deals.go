@@ -76,15 +76,47 @@ func resourceDealsCreate(ctx context.Context, d *schema.ResourceData, m interfac
 	org_name := result["data"].(map[string]interface{})["org_name"]
 
 	d.Set("org_name", org_name)
-	// always run
 	d.SetId(id_string)
 
 	return diags
 }
 
 func resourceDealsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := &http.Client{Timeout: 10 * time.Second}
+	id := d.Id()
+	apikey := m.(*Client).apitoken
+	baseurl := m.(*Client).baseurl
+	apiurl := fmt.Sprintf("%s/deals/%s%s", baseurl, id, apikey)
+
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+	req, err := http.NewRequest("GET", apiurl, nil)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	r, err := client.Do(req)
+	if r.StatusCode == 404 && err != nil {
+		d.SetId("")
+		diag.FromErr(err)
+	}
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	defer r.Body.Close()
+
+	var result map[string]any
+	err = json.NewDecoder(r.Body).Decode(&result)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	org_name := result["data"].(map[string]interface{})["org_name"]
+	title := result["data"].(map[string]interface{})["title"]
+
+	d.Set("org_name", org_name)
+	d.Set("title", title)
+
 	return diags
 }
 
