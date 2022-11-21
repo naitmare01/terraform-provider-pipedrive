@@ -162,7 +162,43 @@ func resourceDealsUpdate(ctx context.Context, d *schema.ResourceData, m interfac
 }
 
 func resourceDealsDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := &http.Client{Timeout: 10 * time.Second}
+	id := d.Id()
+	apikey := m.(*Client).apitoken
+	baseurl := m.(*Client).baseurl
+	apiurl := fmt.Sprintf("%s/deals/%s%s", baseurl, id, apikey)
+
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+	req, err := http.NewRequest("DELETE", apiurl, nil)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	r, err := client.Do(req)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	defer r.Body.Close()
+
+	var result map[string]any
+	err = json.NewDecoder(r.Body).Decode(&result)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	success := result["success"]
+
+	if success == false {
+		error_msg := result["error"]
+		error_msg_verbose := result["error_info"]
+		return diag.Errorf("%s %s", error_msg, error_msg_verbose)
+	}
+
+	// d.SetId("") is automatically called assuming delete returns no errors, but
+	// it is added here for explicitness.
+	d.SetId("")
+
 	return diags
 }
