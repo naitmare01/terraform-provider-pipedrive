@@ -121,9 +121,31 @@ func resourceDealsRead(ctx context.Context, d *schema.ResourceData, m interface{
 }
 
 func resourceDealsUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	// Warning or errors can be collected in a slice type
-	var diags diag.Diagnostics
-	return diags
+	client := &http.Client{Timeout: 10 * time.Second}
+	id := d.Id()
+	title := d.Get("title").(string)
+	apikey := m.(*Client).apitoken
+	baseurl := m.(*Client).baseurl
+	apiurl := fmt.Sprintf("%s/deals/%s%s", baseurl, id, apikey)
+	payload := strings.NewReader(`{
+		"title": "` + title + `"}`)
+
+	req, err := http.NewRequest("PUT", apiurl, payload)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+
+	r, err := client.Do(req)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	defer r.Body.Close()
+
+	return resourceDealsRead(ctx, d, m)
+
 }
 
 func resourceDealsDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

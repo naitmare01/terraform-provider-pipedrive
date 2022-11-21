@@ -32,8 +32,8 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 }
 
 type Client struct {
-	apitoken string
-	baseurl  string
+	apitoken string "omitempty"
+	baseurl  string "omitempty"
 }
 
 // NewClient creates common settings
