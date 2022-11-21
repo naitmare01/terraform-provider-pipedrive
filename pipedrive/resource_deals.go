@@ -123,12 +123,10 @@ func resourceDealsRead(ctx context.Context, d *schema.ResourceData, m interface{
 func resourceDealsUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := &http.Client{Timeout: 10 * time.Second}
 	id := d.Id()
-	title := d.Get("title").(string)
 	apikey := m.(*Client).apitoken
 	baseurl := m.(*Client).baseurl
 	apiurl := fmt.Sprintf("%s/deals/%s%s", baseurl, id, apikey)
-	payload := strings.NewReader(`{
-		"title": "` + title + `"}`)
+	payload := DealsBody(d)
 
 	req, err := http.NewRequest("PUT", apiurl, payload)
 

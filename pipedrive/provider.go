@@ -1,6 +1,8 @@
 package pipedrive
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -42,4 +44,20 @@ func NewClient(apitoken string) *Client {
 		apitoken: "?api_token=" + apitoken,
 		baseurl:  "https://api.pipedrive.com/v1",
 	}
+}
+
+func DealsBody(d *schema.ResourceData) *strings.Reader {
+	result := ""
+	resultstart := `{`
+	resultend := `}`
+
+	title := d.Get("title").(string)
+	if title != "" {
+		result += `"title": "` + title + `",`
+	}
+	result = strings.TrimSuffix(result, ",")
+	result = resultstart + result + resultend
+	returnresult := strings.NewReader(result)
+
+	return returnresult
 }
