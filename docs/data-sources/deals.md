@@ -11,7 +11,7 @@ description: |-
 ## Example Usage
 
 ```hcl
-data pipedrive_deals "example"{
+data "pipedrive_deals" "example"{
   id = "123"
 }
 
