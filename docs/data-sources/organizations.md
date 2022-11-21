@@ -3,7 +3,7 @@
 ## Example Usage
 
 ```hcl
-data pipedrive_organizations "example"{
+data "pipedrive_organizations" "example"{
   id = "123"
 }
 
