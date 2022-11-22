@@ -14,7 +14,7 @@ import (
 func dataSourceNotes() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceNotesRead,
-		Schema: map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{ //TODO add option get all notes
 			"id": {
 				Type:     schema.TypeString,
 				Required: true,
