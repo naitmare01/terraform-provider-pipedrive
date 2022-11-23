@@ -6,6 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/naitmare01/terraform-provider-pipedrive/client"
 )
 
 func dataSourceNotes() *schema.Resource {
@@ -41,7 +42,7 @@ func dataSourceNotesRead(ctx context.Context, d *schema.ResourceData, m interfac
 	var diags diag.Diagnostics
 	id := d.Get("id").(string)
 	path := "notes/" + id
-	resp, _, _, err := m.(*Client).SendRequest("GET", path, nil, 200)
+	resp, _, _, err := m.(*client.Client).SendRequest("GET", path, nil, 200)
 
 	if err != nil {
 		return diag.FromErr(err)
