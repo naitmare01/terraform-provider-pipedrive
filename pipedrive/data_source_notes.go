@@ -3,9 +3,6 @@ package pipedrive
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"net/http"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -40,28 +37,18 @@ func dataSourceNotes() *schema.Resource {
 }
 
 func dataSourceNotesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
-	id := d.Get("id").(string)
-	apikey := m.(*Client).apitoken
-	baseurl := m.(*Client).baseurl
-	apiurl := fmt.Sprintf("%s/notes/%s%s", baseurl, id, apikey)
-
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+	id := d.Get("id").(string)
+	path := "notes/" + id
+	resp, _, _, err := m.(*Client).SendRequest("GET", path, nil, 200)
 
-	req, err := http.NewRequest("GET", apiurl, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	r, err := client.Do(req)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	defer r.Body.Close()
 
 	var result map[string]any
-	err = json.NewDecoder(r.Body).Decode(&result)
+	err = json.Unmarshal([]byte(resp), &result)
 	if err != nil {
 		return diag.FromErr(err)
 	}

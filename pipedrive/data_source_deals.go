@@ -35,7 +35,8 @@ func dataSourceDeals() *schema.Resource {
 func dataSourceDealsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	path := "deals/" + d.Get("id").(string)
+	id := d.Get("id").(string)
+	path := "deals/" + id
 	resp, _, _, err := m.(*Client).SendRequest("GET", path, nil, 200)
 
 	if err != nil {
@@ -56,7 +57,7 @@ func dataSourceDealsRead(ctx context.Context, d *schema.ResourceData, m interfac
 	d.Set("org_name", org_name)
 	d.Set("status", status)
 
-	d.SetId(d.Get("id").(string))
+	d.SetId(id)
 
 	return diags
 }
