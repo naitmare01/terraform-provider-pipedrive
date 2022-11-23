@@ -3,9 +3,6 @@ package pipedrive
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"net/http"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -36,31 +33,21 @@ func dataSourceDeals() *schema.Resource {
 }
 
 func dataSourceDealsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
-	id := d.Get("id").(string)
-	apikey := m.(*Client).apitoken
-	baseurl := m.(*Client).baseurl
-	apiurl := fmt.Sprintf("%s/deals/%s%s", baseurl, id, apikey)
-
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+	path := "deals/" + d.Get("id").(string)
+	resp, _, _, err := m.(*Client).SendRequest("GET", path, nil, 200)
 
-	req, err := http.NewRequest("GET", apiurl, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	r, err := client.Do(req)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	defer r.Body.Close()
 
 	var result map[string]any
-	err = json.NewDecoder(r.Body).Decode(&result)
+	err = json.Unmarshal([]byte(resp), &result)
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
 	title := result["data"].(map[string]interface{})["title"]
 	org_name := result["data"].(map[string]interface{})["org_name"]
 	status := result["data"].(map[string]interface{})["status"]
@@ -69,8 +56,7 @@ func dataSourceDealsRead(ctx context.Context, d *schema.ResourceData, m interfac
 	d.Set("org_name", org_name)
 	d.Set("status", status)
 
-	// always run
-	d.SetId(id)
+	d.SetId(d.Get("id").(string))
 
 	return diags
 }
