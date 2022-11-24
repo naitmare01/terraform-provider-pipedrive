@@ -87,7 +87,7 @@ func resourceOrganizationsRead(ctx context.Context, d *schema.ResourceData, m in
 func resourceOrganizationsUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	id := d.Id()
 	path := "organizations/" + id
-	body := NotesBody(d)
+	body := OrganizationsBody(d)
 	_, _, _, err := m.(*Client).SendRequest("PUT", path, body, 200)
 
 	if err != nil {
