@@ -24,3 +24,4 @@ In addition to all argument, the following attributes are exported:
 
 * **id** The ID of this resource.
 * **title** The title of this resource
+* **add_time** The creation date & time of the organization in UTC
