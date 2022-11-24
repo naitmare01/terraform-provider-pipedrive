@@ -20,3 +20,7 @@ type NotesBodyPost struct {
 	Content string `json:"content,omitempty"`
 	DealID  string `json:"deal_id,omitempty"`
 }
+
+type OrganizationsBodyPost struct {
+	Name string `json:"name,omitempty"`
+}

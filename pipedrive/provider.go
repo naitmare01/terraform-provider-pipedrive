@@ -16,13 +16,14 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"pipedrive_deals": resourceDeals(),
-			"pipedrive_notes": resourceNotes(),
+			"pipedrive_deals":         resourceDeals(),
+			"pipedrive_notes":         resourceNotes(),
+			"pipedrive_organizations": resourceOrganizations(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"pipedrive_deals":         dataSourceDeals(),
-			"pipedrive_organizations": dataSourceOrganizations(),
 			"pipedrive_notes":         dataSourceNotes(),
+			"pipedrive_organizations": dataSourceOrganizations(),
 		},
 		ConfigureFunc: providerConfigure,
 	}

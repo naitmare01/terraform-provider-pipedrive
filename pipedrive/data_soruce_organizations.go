@@ -20,6 +20,10 @@ func dataSourceOrganizations() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"add_time": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -42,7 +46,10 @@ func dataSourceOrganizationsRead(ctx context.Context, d *schema.ResourceData, m 
 	}
 
 	name := result["data"].(map[string]interface{})["name"]
+	add_time := result["data"].(map[string]interface{})["add_time"]
+
 	d.Set("name", name)
+	d.Set("add_time", add_time)
 
 	d.SetId(id)
 

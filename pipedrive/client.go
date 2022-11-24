@@ -44,6 +44,14 @@ func NotesBody(d *schema.ResourceData) NotesBodyPost {
 	return body
 }
 
+func OrganizationsBody(d *schema.ResourceData) OrganizationsBodyPost {
+	body := OrganizationsBodyPost{
+		Name: d.Get("name").(string),
+	}
+
+	return body
+}
+
 func (c *Client) SendRequest(method string, path string, payload interface{}, statusCode int) (value string, respheaders string, respCode int, err error) {
 	apiurl := c.baseurl + path + c.apitoken
 	client := &http.Client{Timeout: 10 * time.Second}
