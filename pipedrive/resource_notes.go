@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -46,31 +44,18 @@ func resourceNotes() *schema.Resource {
 }
 
 func resourceNotesCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
-	apikey := m.(*Client).apitoken
-	baseurl := m.(*Client).baseurl
-	apiurl := fmt.Sprintf("%s/notes%s", baseurl, apikey)
-	payload := DealsBody(d)
-
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+	path := "notes"
+	body := NotesBody(d)
+	resp, _, _, err := m.(*Client).SendRequest("POST", path, body, 201)
 
-	req, err := http.NewRequest("POST", apiurl, payload)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Accept", "application/json")
-
-	r, err := client.Do(req)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	defer r.Body.Close()
 
 	var result map[string]any
-	err = json.NewDecoder(r.Body).Decode(&result)
+	err = json.Unmarshal([]byte(resp), &result)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -90,32 +75,18 @@ func resourceNotesCreate(ctx context.Context, d *schema.ResourceData, m interfac
 }
 
 func resourceNotesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
-	id := d.Id()
-	apikey := m.(*Client).apitoken
-	baseurl := m.(*Client).baseurl
-	apiurl := fmt.Sprintf("%s/notes/%s%s", baseurl, id, apikey)
-
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+	id := d.Id()
+	path := "notes/" + id
+	resp, _, _, err := m.(*Client).SendRequest("GET", path, nil, 200)
 
-	req, err := http.NewRequest("GET", apiurl, nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	r, err := client.Do(req)
-	if r.StatusCode == 404 && err != nil {
-		d.SetId("")
-		diag.FromErr(err)
-	}
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	defer r.Body.Close()
 
 	var result map[string]any
-	err = json.NewDecoder(r.Body).Decode(&result)
+	err = json.Unmarshal([]byte(resp), &result)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -136,53 +107,31 @@ func resourceNotesRead(ctx context.Context, d *schema.ResourceData, m interface{
 }
 
 func resourceNotesUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
 	id := d.Id()
-	apikey := m.(*Client).apitoken
-	baseurl := m.(*Client).baseurl
-	apiurl := fmt.Sprintf("%s/notes/%s%s", baseurl, id, apikey)
-	payload := DealsBody(d)
-
-	req, err := http.NewRequest("PUT", apiurl, payload)
+	path := "notes/" + id
+	body := NotesBody(d)
+	_, _, _, err := m.(*Client).SendRequest("PUT", path, body, 200)
 
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Accept", "application/json")
-
-	r, err := client.Do(req)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	defer r.Body.Close()
 
 	return resourceNotesRead(ctx, d, m)
 }
 
 func resourceNotesDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
-	id := d.Id()
-	apikey := m.(*Client).apitoken
-	baseurl := m.(*Client).baseurl
-	apiurl := fmt.Sprintf("%s/notes/%s%s", baseurl, id, apikey)
-
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	req, err := http.NewRequest("DELETE", apiurl, nil)
+	id := d.Id()
+	path := "notes/" + id
+	resp, _, _, err := m.(*Client).SendRequest("DELETE", path, nil, 200)
 
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	r, err := client.Do(req)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	defer r.Body.Close()
 
 	var result map[string]any
-	err = json.NewDecoder(r.Body).Decode(&result)
+	err = json.Unmarshal([]byte(resp), &result)
 	if err != nil {
 		return diag.FromErr(err)
 	}
