@@ -1,4 +1,4 @@
-# Terraform Provider Pipedrive
+# Terraform Pipedrive Provider
 
 Run the following command to build the provider
 
